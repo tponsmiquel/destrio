@@ -11,6 +11,8 @@ class View:
         self.root = root
         self.root.title("Destrio")
 
+        self.current_editable_day = None
+
         self.calendar_frame = tk.Frame(self.root)
         self.calendar_frame.pack()
 
@@ -19,21 +21,54 @@ class View:
 
         self.create_widgets()
 
+        # Mostrar mensaje al iniciar la aplicación
+        self.root.after(100, self.show_initial_message)
+
     def create_widgets(self):
         self.calendar = Calendar(self.calendar_frame, selectmode='day', year=datetime.now().year, month=datetime.now().month, day=datetime.now().day)
         self.calendar.pack(pady=20)
+        self.calendar.bind("<<CalendarSelected>>", self.on_calendar_select)
 
         self.save_button = tk.Button(self.root, text="Guardar", command=self.save_data)
         self.save_button.pack(pady=20)
 
-        self.tree = ttk.Treeview(self.table_frame, columns=('Cliente', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'), show='headings')
+        # Añadir barras de desplazamiento
+        self.tree_scroll_y = tk.Scrollbar(self.table_frame, orient=tk.VERTICAL)
+        self.tree_scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.tree_scroll_x = tk.Scrollbar(self.table_frame, orient=tk.HORIZONTAL)
+        self.tree_scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+
+        self.tree = ttk.Treeview(self.table_frame, columns=('Cliente', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'), show='headings', yscrollcommand=self.tree_scroll_y.set, xscrollcommand=self.tree_scroll_x.set)
         self.tree.heading('Cliente', text='Cliente')
         for day in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']:
             self.tree.heading(day, text=day)
             self.tree.column(day, width=100, anchor='center')
 
         self.tree.pack(fill=tk.BOTH, expand=True)
+
+        self.tree_scroll_y.config(command=self.tree.yview)
+        self.tree_scroll_x.config(command=self.tree.xview)
+
         self.tree.bind("<Double-1>", self.on_double_click)
+
+    def show_initial_message(self):
+        messagebox.showinfo("Selección de Fecha", "Por favor, seleccione un día en el calendario para editar.")
+
+    def on_calendar_select(self, event):
+        selected_date = self.calendar.get_date()
+        day_of_week = datetime.strptime(selected_date, "%m/%d/%y").strftime("%A")
+        day_map = {
+            "Monday": "Lunes",
+            "Tuesday": "Martes",
+            "Wednesday": "Miércoles",
+            "Thursday": "Jueves",
+            "Friday": "Viernes",
+            "Saturday": "Sábado",
+            "Sunday": "Domingo"
+        }
+        self.current_editable_day = day_map.get(day_of_week)
+        messagebox.showinfo("Día Seleccionado", f"Solo se puede editar la columna: {self.current_editable_day}")
 
     def populate_table(self, data):
         self.tree.delete(*self.tree.get_children())
@@ -46,8 +81,11 @@ class View:
         col_num = int(col.replace('#', '')) - 1
         client = self.tree.item(item, 'values')[0]
         current_value = self.tree.set(item, column=col_num)
-        new_value = self.controller.get_next_value(current_value)
         day = self.tree.heading(col)['text']
+        if day != self.current_editable_day:
+            messagebox.showerror("Error", f"Solo se puede editar la columna: {self.current_editable_day}")
+            return
+        new_value = self.controller.get_next_value(current_value)
         self.controller.update_record(client, day, new_value)
         self.tree.set(item, column=col_num, value=new_value)
 
