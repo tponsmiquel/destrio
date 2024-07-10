@@ -1,0 +1,84 @@
+Diseñar e implementar en windows una aplicación llamada "destrio" con arquitectura Python MVC que haga lo siguiente:
+
+- Despliegue de un listado de clientes desde un archivo llamado "clients.txt":
+Joan March + uniformidad
+Hospital Son LLatzer
+Palas Avenidas
+Sofia
+Calardiaca (J-D)
+M. House
+Hotel II
+Estudio 6 (J-D)
+Icon Roseto
+Aldea 2
+Sun Beach
+Maristel (M-J-D)
+Surfing Playa
+Holiday Center
+Policlinica
+Nixe
+Hospital de Muro
+Panoramic
+Efeso
+Mariner
+Blue Sea Piscis
+President
+Ses Roquetes
+JS Yate
+Ivory
+JS Miramar
+Aptos Sand (L X V D)
+Es Talaia
+Hotel Eques
+Residencia Felanitx
+Calimera
+Agroturismo
+San Jaime (L X S)
+Waterfront
+Punt Mar
+Bali Park
+Orlando
+Bali Tower
+Occidental
+Tres Torres (L X V D)
+Pabisa Chico
+Mar Senses
+Barcelo Cala Vinas
+Hilton Galatzo
+Rosa del Mar
+JS Alcudi Mar
+JS Can Picafort
+JS Sol de Alcudia
+Bluebay Can Picafort
+Tucan
+Nature Olea
+Icon Valparaiso
+Cala Murada
+Ferrera Blanca
+Barcelo Agua Marina
+Cala d'Or
+Azul Playa
+Sunwing
+
+- El operario deberá seleccionar la fecha en el calendario ( la fecha actual se establecerá automáticamente al iniciar la aplicación).
+- Después de seleccionar la fecha, para cada cliente deberá seleccionar/marcar 3 posibles opciones: "Si"/"No"/"null"
+- La selección deberá realizarse mediante doble click. Cada doble click cambia el valor (Si>No>null).
+- Esta información debe aparecer en forma de tabla: primera columna para el nombre del cliente, segunda columna para lunes, tercera columna martes, etc. hasta el domingo.
+- Asegurar que la navegación por la aplicación y la tabla es cómoda y fluida (barras de desplazamiento).
+- Para guardar los datos el operario deberá hacer click en el botón "Guardar".
+- Se guardarán los registros seleccionados (Cliente + Si/No/" ") en un archivo csv, de lunes a domingo, de la siguiente manera ejemplo):
+
+Cliente	Lunes	Martes	Miercoles	Jueves	Viernes	Sabado	Domingo)
+Joan March + uniformidad	No	No	No	No	Si	No	No
+Hospital Son LLatzer	No	Si	No	No		No	No
+Palas Avenidas	No		No	Si	Si	No	
+
+- Los archivos csv se guardaran en la carpeta data. El nombre de cada archivo será "registro_dialunes_mes_año_to_diadomingo_mes_año.csv" (ejemplo: registro_08_07_2024_to_14_07_2024.csv).
+- Si el registro se ha guardado correctamente se notificará al operario con un mensaje de éxito. Si no, aparecerá un mensaje de error.
+- Si se ha guardado correctamente,  se actualizará la vista de la aplicación mostrando los nuevos registros.
+- Los registros que vaya añadiendo el operario a lo largo del día se guardarán sin modificar el anterior registro realizado. 
+Es decir, el operario no tendrá que editar toda la tabla cada vez que quiera añadir un registro.
+- Cada vez que inicia la aplicación, primero deberá leer si hay registros guardados. Si los hay, los deberá cargar. Por ejemplo, si inicio la aplicación un miércoles, y existen registros de esa semana para el lunes y el martes,
+deberán cargarse en la vista de la aplicación.
+- Añadir las validaciones necesarias para guardar registros.
+- Utilizar "pd.concat" en vez utilizar "append".
