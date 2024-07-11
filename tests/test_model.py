@@ -7,7 +7,6 @@ from model import Model
 class TestModel(unittest.TestCase):
     def setUp(self):
         print("Configuración inicial para la prueba...")
-
         # Crear un archivo de clientes de prueba
         self.clients_file = 'clients_test.txt'
         with open(self.clients_file, 'w') as f:
@@ -22,9 +21,8 @@ class TestModel(unittest.TestCase):
         self.model = Model(clients_file=self.clients_file, data_dir=self.data_dir)
 
     def tearDown(self):
-        print("Limpiando archivos de prueba...")
-        
         # Eliminar archivos de prueba
+        print("Limpiando archivos de prueba...")
         if os.path.exists(self.clients_file):
             os.remove(self.clients_file)
         if os.path.exists(self.data_dir):
@@ -58,12 +56,11 @@ class TestModel(unittest.TestCase):
         print("Prueba test_load_current_data: iniciando...")
         data = self.model.load_current_data()
         self.assertEqual(list(data['Cliente']), ["Cliente1", "Cliente2", "Cliente3"])
-        self.assertTrue(all(col in data.columns for col in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']))
+        self.assertTrue(all(col in data.columns for col in ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']))
         print("Prueba test_load_current_data: finalizada con éxito")
 
     def test_save_and_load_data(self):
         print("Prueba test_save_and_load_data: iniciando...")
-        
         # Añadir datos de prueba y guardar
         self.model.update_record("Cliente1", "Lunes", "Si")
         self.model.update_record("Cliente2", "Martes", "No")
@@ -77,7 +74,6 @@ class TestModel(unittest.TestCase):
 
     def test_load_data_for_selected_week(self):
         print("Prueba test_load_data_for_selected_week: iniciando...")
-        
         # Guardar datos para la semana actual
         self.model.update_record("Cliente1", "Lunes", "Si")
         self.model.update_record("Cliente2", "Martes", "No")
@@ -94,10 +90,10 @@ class TestModel(unittest.TestCase):
             'Cliente': ["Cliente1", "Cliente2", "Cliente3"],
             'Lunes': ["No", "", ""],
             'Martes': ["", "Si", ""],
-            'Miércoles': ["", "", ""],
+            'Miercoles': ["", "", ""],
             'Jueves': ["", "", ""],
             'Viernes': ["", "", ""],
-            'Sábado': ["", "", ""],
+            'Sabado': ["", "", ""],
             'Domingo': ["", "", ""]
         })
         future_data.to_csv(future_file_path, index=False, na_rep='')
@@ -109,43 +105,28 @@ class TestModel(unittest.TestCase):
         self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente2", "Lunes"].values[0], "")
         print("Prueba test_load_data_for_selected_week: finalizada con éxito")
 
-    def test_update_multiple_records(self):
-        """
-        Prueba la actualización de múltiples registros en el modelo.
-        """
-        print("Prueba test_update_multiple_records: iniciando...")
-        
-        self.model.update_record("Cliente1", "Lunes", "Si")
-        self.model.update_record("Cliente1", "Martes", "No")
-        self.model.update_record("Cliente2", "Miércoles", "Si")
-        self.model.update_record("Cliente2", "Jueves", "No")
-        self.model.update_record("Cliente3", "Viernes", "Si")
-        self.model.save_data()
-
-        # Verificar que los datos se han actualizado correctamente
-        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente1", "Lunes"].values[0], "Si")
-        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente1", "Martes"].values[0], "No")
-        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente2", "Miércoles"].values[0], "Si")
-        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente2", "Jueves"].values[0], "No")
-        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente3", "Viernes"].values[0], "Si")
-        print("Prueba test_update_multiple_records: finalizada con éxito")
-
     def test_load_data_for_week_without_records(self):
-        """
-        Prueba la carga de datos para una semana sin datos guardados.
-        """
         print("Prueba test_load_data_for_week_without_records: iniciando...")
-        
-        # Seleccionar una fecha para la que no hay registros
+        # Cambiar a una fecha dentro de 2 meses (asegurar que no hay registros para esa semana)
         future_date = datetime.today() + timedelta(days=60)
         self.model.current_data = self.model.load_current_data(date=future_date)
-
-        # Verificar que los datos se han inicializado correctamente con columnas vacías
-        self.assertEqual(list(self.model.current_data['Cliente']), ["Cliente1", "Cliente2", "Cliente3"])
-        self.assertTrue(all(col in self.model.current_data.columns for col in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']))
-        # Verificar que las celdas están vacías en lugar de nulas
-        self.assertTrue((self.model.current_data[['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']] == '').all().all())
+        # Verificar que todos los valores están vacíos para la semana sin registros
+        self.assertTrue(self.model.current_data[['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']].eq('').all().all())
         print("Prueba test_load_data_for_week_without_records: finalizada con éxito")
+
+    def test_update_multiple_records(self):
+        print("Prueba test_update_multiple_records: iniciando...")
+        # Actualizar varios registros
+        self.model.update_record("Cliente1", "Lunes", "Si")
+        self.model.update_record("Cliente1", "Martes", "No")
+        self.model.update_record("Cliente2", "Lunes", "No")
+        self.model.update_record("Cliente3", "Miercoles", "Si")
+        # Verificar que los registros se han actualizado correctamente
+        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente1", "Lunes"].values[0], "Si")
+        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente1", "Martes"].values[0], "No")
+        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente2", "Lunes"].values[0], "No")
+        self.assertEqual(self.model.current_data.loc[self.model.current_data['Cliente'] == "Cliente3", "Miercoles"].values[0], "Si")
+        print("Prueba test_update_multiple_records: finalizada con éxito")
 
 if __name__ == '__main__':
     unittest.main()

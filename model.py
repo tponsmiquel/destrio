@@ -77,12 +77,12 @@ class Model:
 
         # Crear un DataFrame con los nombres de los clientes y columnas para cada día de la semana
         data = pd.DataFrame(self.clients, columns=['Cliente'])
-        for day in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']:
+        for day in ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']:
             data[day] = ''
 
         # Si el archivo existe, cargar los datos y combinarlos con el DataFrame de clientes
         if os.path.exists(file_path):
-            loaded_data = pd.read_csv(file_path)
+            loaded_data = pd.read_csv(file_path, encoding='utf-8', sep=';')
             loaded_data = loaded_data.astype(str).fillna('')  # Convertir a cadena y reemplazar nulos
             # Asegurarse de mantener todos los clientes y sus datos correspondientes
             data.set_index('Cliente', inplace=True)
@@ -104,7 +104,8 @@ class Model:
         start_of_week, end_of_week = self.get_week_range(today)
         filename = self.get_csv_filename(start_of_week, end_of_week)
         file_path = os.path.join(self.data_dir, filename)
-        self.current_data.to_csv(file_path, na_rep='', index=False)  # Asegura que los nulos se guarden como vacíos
+        self.current_data.replace('nan', '', inplace=True)  # Asegura que los valores 'nan' se reemplacen por cadenas vacías
+        self.current_data.to_csv(file_path, na_rep='', index=False, encoding='utf-8', sep=';')  # Asegura que los nulos se guarden como vacíos y especifica el delimitador
         return True
 
     def update_record(self, client, day, value):

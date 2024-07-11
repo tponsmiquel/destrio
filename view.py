@@ -54,10 +54,16 @@ class View:
         self.tree_scroll_x = tk.Scrollbar(self.table_frame, orient=tk.HORIZONTAL)
         self.tree_scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
 
-        # Crear y configurar la tabla
-        self.tree = ttk.Treeview(self.table_frame, columns=('Cliente', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'), show='headings', yscrollcommand=self.tree_scroll_y.set, xscrollcommand=self.tree_scroll_x.set)
+        # Crear y configurar la tabla con estilo
+        style = ttk.Style()
+        style.configure("Treeview", rowheight=25, borderwidth=1)
+        style.configure("Treeview.Heading", font=('Helvetica', 12, 'bold'))
+        style.map("Treeview", background=[("selected", "lightblue")], foreground=[("selected", "black")])
+        style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})])  # Remove borders
+
+        self.tree = ttk.Treeview(self.table_frame, columns=('Cliente', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'), show='headings', yscrollcommand=self.tree_scroll_y.set, xscrollcommand=self.tree_scroll_x.set)
         self.tree.heading('Cliente', text='Cliente')
-        for day in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']:
+        for day in ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']:
             self.tree.heading(day, text=day)
             self.tree.column(day, width=100, anchor='center')
 
@@ -88,10 +94,10 @@ class View:
         day_map = {
             "Monday": "Lunes",
             "Tuesday": "Martes",
-            "Wednesday": "Miércoles",
+            "Wednesday": "Miercoles",
             "Thursday": "Jueves",
             "Friday": "Viernes",
-            "Saturday": "Sábado",
+            "Saturday": "Sabado",
             "Sunday": "Domingo"
         }
         self.current_editable_day = day_map.get(day_of_week)
